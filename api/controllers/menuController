@@ -1,0 +1,49 @@
+const db = require('../config/database');
+
+// 1. Mengambil semua menu dari database MySQL (Read)
+const getAllMenu = (req, res) => {
+    const sql = 'SELECT * FROM menu'; 
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Gagal mengambil data dari database' });
+        }
+        res.json(results);
+    });
+};
+
+// 2. Menambah menu baru ke database MySQL (Create)
+const createMenu = (req, res) => {
+    const { nama, harga, kategori, gambar } = req.body;
+
+    // Validasi sederhana
+    if (!nama || !harga || !kategori) {
+        return res.status(400).json({ message: 'Nama, harga, dan kategori wajib diisi!' });
+    }
+
+    const sql = 'INSERT INTO menu (nama, harga, kategori, gambar) VALUES (?, ?, ?, ?)';
+    db.query(sql, [nama, harga, kategori, gambar || null], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ message: 'Gagal menambahkan menu ke database' });
+        }
+        res.status(201).json({
+            message: 'Menu berhasil ditambahkan!',
+            id: result.insertId
+        });
+    });
+};
+
+// Function placeholder untuk fitur berikutnya
+const getMenuById = (req, res) => { res.json({ message: "Get menu by ID" }); };
+const updateMenu = (req, res) => { res.json({ message: "Update menu" }); };
+const deleteMenu = (req, res) => { res.json({ message: "Hapus menu" }); };
+
+module.exports = {
+    getAllMenu,
+    getMenuById,
+    createMenu,
+    updateMenu,
+    deleteMenu
+};
